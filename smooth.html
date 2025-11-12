@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cafeteria Brown - Smoothies</title>
+  <style>
+    /* ======= RESET ======= */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ======= CORPO ======= */
+    body {
+      font-family: "Merriweather", serif;
+      color: #4b2e2b;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(135deg, #ffe6fa 0%, #ffe0d4 40%, #ffc2b3 70%, #ffb3b3 100%);
+      background-size: 200% 200%;
+      animation: fundoAnimado 10s ease-in-out infinite;
+    }
+
+    @keyframes fundoAnimado {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    h1, h2 { font-family: "Merriweather", serif; }
+
+    /* ======= CABEÇALHO ======= */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(90deg, #ff8c8c, #ffb899);
+      padding: 15px 25px;
+      position: relative;
+      flex-wrap: wrap;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    }
+
+    .logo { display: flex; align-items: center; }
+    .logo img { height: 55px; margin-right: 10px; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+    .logo h1 { font-size: 1.6em; color: white; letter-spacing: 1px; }
+
+    /* ======= MENU ======= */
+    nav { display: none; flex-direction: column; background: linear-gradient(180deg, #ff8c8c, #ffb899); position: absolute; top: 70px; right: 0; width: 220px; text-align: right; padding: 15px 0; border-radius: 0 0 0 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10; }
+    nav a { display: block; color: white; text-decoration: none; margin: 12px 25px; font-weight: bold; font-size: 16px; transition: 0.3s; }
+    nav a:hover { color: #fffbe8; transform: translateX(-5px); }
+    nav.active { display: flex; animation: slideDown 0.3s ease; }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .menu-toggle { display: flex; flex-direction: column; cursor: pointer; position: absolute; top: 20px; right: 25px; z-index: 100; }
+    .menu-toggle span { height: 3px; width: 25px; background: white; margin: 4px 0; border-radius: 5px; transition: 0.3s; }
+    .menu-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    .menu-toggle.active span:nth-child(2) { opacity: 0; }
+    .menu-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+    /* ======= CARDS ======= */
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      padding: 60px 25px;
+      max-width: 1200px;
+      margin: auto;
+      flex-grow: 1;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      border: 2px solid #ffb899;
+      backdrop-filter: blur(3px);
+    }
+
+    .card:hover { transform: translateY(-6px) scale(1.02); border-color: #ff7b7b; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .card img { width: 100%; height: 200px; object-fit: cover; }
+    .card-content { padding: 15px; text-align: center; }
+    .card-content h3 { margin: 10px 0 5px; color: #b05b22; font-size: 1.2rem; }
+    .card-content p { color: #4b2e2b; font-size: 0.95em; margin-bottom: 10px; }
+
+    .price { font-weight: bold; color: #ff7b7b; font-size: 1.2rem; margin-bottom: 10px; }
+
+    .quantidade { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; }
+    .quantidade button { background-color: #ff7b7b; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 18px; transition: background-color 0.3s, transform 0.2s; }
+    .quantidade button:hover { background-color: #e35e5e; transform: scale(1.1); }
+
+    /* ======= SACOLA ======= */
+    #sacola {
+      position: fixed; bottom: 20px; right: 20px;
+      background: linear-gradient(90deg, #4b2e2b, #6a3c37);
+      color: white; padding: 15px 20px; border-radius: 12px; box-shadow: 0 5px 12px rgba(0,0,0,0.3);
+      display: flex; align-items: center; gap: 12px; z-index: 200;
+    }
+
+    #whatsapp, #verCarrinho { background-color: #25d366; border: none; color: white; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: background-color 0.3s, transform 0.2s; }
+    #verCarrinho { background-color: #ff7b7b; }
+    #whatsapp:hover { background-color: #1da955; transform: scale(1.05); }
+    #verCarrinho:hover { background-color: #e35e5e; transform: scale(1.05); }
+
+    /* ======= MODAL CARRINHO ======= */
+    #modalCarrinho {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 999;
+    }
+
+    #modalCarrinho .conteudo {
+      background: white; border-radius: 12px; padding: 20px; width: 92%; max-width: 420px; text-align: center; color: #4b2e2b;
+    }
+
+    #modalCarrinho h2 { margin-bottom: 12px; color: #b05b22; }
+    #listaCarrinho { list-style: none; margin-bottom: 10px; max-height: 300px; overflow-y: auto; padding: 0 6px; }
+    #listaCarrinho li { display: flex; justify-content: space-between; align-items: center; padding: 8px 6px; border-bottom: 1px solid #eee; gap: 8px; }
+
+    .item-info { display:flex; gap:8px; align-items:center; }
+    .remover { background: #ff7b7b; border: none; color: white; border-radius: 5px; cursor: pointer; padding: 6px 8px; font-size: 0.85rem; }
+    .remover:hover { background:#e35e5e; }
+
+    #fecharCarrinho { margin-top: 12px; background-color: #4b2e2b; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+    #fecharCarrinho:hover { background-color: #2e1a18; }
+
+    /* ======= RODAPÉ ======= */
+    footer { text-align: center; background: linear-gradient(90deg, #ff8c8c, #ffb899); color: white; padding: 25px 0; box-shadow: 0 -3px 10px rgba(0,0,0,0.15); font-size: 0.95rem; margin-top: auto; }
+    footer img { width: 25px; margin-left: 5px; vertical-align: middle; }
+
+    /* ======= RESPONSIVIDADE ======= */
+    @media (max-width: 768px) { .cards-container { grid-template-columns: repeat(2, 1fr); } #sacola { right:10px; bottom:10px; } }
+    @media (max-width: 480px) { .cards-container { grid-template-columns: 1fr; } #sacola { flex-direction: column; left:10px; right:10px; } .logo h1 { font-size: 1.3em; } }
+  </style>
+</head>
+<body>
+
+  <!-- ======= CABEÇALHO ======= -->
+  <header>
+    <div class="logo">
+      <img src="./logo feira empreendeedrosimso.jpg" alt="Logo da Cafeteria Brown" />
+      <h1>Cafeteria Brown</h1>
+    </div>
+
+    <div class="menu-toggle" id="menu-toggle" tabindex="0">
+      <span></span><span></span><span></span>
+    </div>
+
+    <nav id="menu">
+      <a href="sobremesas.html">🍰 Sobremesas</a>
+      <a href="index.html">🏠 Início</a>
+    </nav>
+  </header>
+
+  <!-- ======= CONTEÚDO PRINCIPAL ======= -->
+  <main style="text-align:center; padding: 40px 20px;">
+    <section class="cards-container" id="produtos">
+
+      <div class="card" data-nome="Smoothie de Caramelo">
+        <img src="./mochacaramelo.png" alt="Smoothie de Caramelo" />
+        <div class="card-content">
+          <h3>Smoothie de Caramelo</h3>
+          <div class="price">R$ 10,00</div>
+          <p>Bebida cremosa que combina leite, caramelo e muito sabor.</p>
+          <div class="quantidade">
+            <button class="menos">−</button>
+            <span class="qtd">0</span>
+            <button class="mais">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-nome="Smoothie de Chocolate">
+        <img src="./mochachocolate.jpg" alt="Smoothie de Chocolate" />
+        <div class="card-content">
+          <h3>Smoothie de Chocolate</h3>
+          <div class="price">R$ 10,00</div>
+          <p>Refrescante, cremoso e com sabor intenso de chocolate.</p>
+          <div class="quantidade">
+            <button class="menos">−</button>
+            <span class="qtd">0</span>
+            <button class="mais">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-nome="Smoothie de Morango">
+        <img src="./morango.jpg" alt="Smoothie de Morango" />
+        <div class="card-content">
+          <h3>Smoothie de Morango</h3>
+          <div class="price">R$ 12,00</div>
+          <p>Bebida leve e nutritiva feita com morangos frescos e leite cremoso.</p>
+          <div class="quantidade">
+            <button class="menos">−</button>
+            <span class="qtd">0</span>
+            <button class="mais">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-nome="Smoothie de Maracujá">
+        <img src="./smoothie de maracuja.jpg" alt="Smoothie de Maracujá" />
+        <div class="card-content">
+          <h3>Smoothie de Maracujá</h3>
+          <div class="price">R$ 12,00</div>
+          <p>Deliciosa mistura tropical de maracujá natural e toque de chantilly.</p>
+          <div class="quantidade">
+            <button class="menos">−</button>
+            <span class="qtd">0</span>
+            <button class="mais">+</button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- ======= SACOLA ======= -->
+  <div id="sacola">
+    <p>Total: <span id="total">R$ 0,00</span></p>
+    <button id="verCarrinho">🛍️ Ver Carrinho</button>
+    <button id="whatsapp">📲 Enviar Pedido</button>
+  </div>
+
+  <!-- ======= MODAL CARRINHO ======= -->
+  <div id="modalCarrinho" aria-hidden="true">
+    <div class="conteudo" role="dialog" aria-modal="true" aria-labelledby="tituloCarrinho">
+      <h2 id="tituloCarrinho">🛒 Seu Carrinho</h2>
+      <ul id="listaCarrinho"></ul>
+      <p><strong>Total:</strong> <span id="totalModal">R$ 0,00</span></p>
+      <button id="fecharCarrinho">Fechar</button>
+    </div>
+  </div>
+
+  <!-- ======= RODAPÉ ======= -->
+  <footer>
+    © 2025 Cafeteria Brown. Todos os direitos reservados
+    <p>
+      Siga no Instagram
+      <a href="https://instagram.com/cafeteriass_brown" target="_blank">
+        <img src="https://cdn-icons-png.flaticon.com/512/1384/1384063.png" alt="Instagram">
+      </a>
+    </p>
+  </footer>
+
+  <!-- ======= SCRIPT ======= -->
+  <script>
+  // ======= MENU =======
+  const menuToggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('menu');
+  menuToggle.addEventListener('click', () => {
+    menu.classList.toggle('active');
+    menuToggle.classList.toggle('active');
+  });
+  menuToggle.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); menuToggle.click(); }
+  });
+
+  // ======= VARIÁVEIS PRINCIPAIS =======
+  const cards = document.querySelectorAll('.card');
+  const totalEl = document.getElementById('total');
+  const whatsappBtn = document.getElementById('whatsapp');
+  const verCarrinhoBtn = document.getElementById('verCarrinho');
+  const modalCarrinho = document.getElementById('modalCarrinho');
+  const listaCarrinho = document.getElementById('listaCarrinho');
+  const totalModal = document.getElementById('totalModal');
+  const fecharCarrinho = document.getElementById('fecharCarrinho');
+
+  let total = 0;
+  let pedidoID = localStorage.getItem('pedidoID') ? parseInt(localStorage.getItem('pedidoID')) : 1;
+
+  // Recupera carrinho do localStorage (obj com { "Nome produto": quantidade })
+  const carrinhoSalvo = JSON.parse(localStorage.getItem('carrinho')) || {};
+
+  // --- Helpers ---
+  function parsePriceText(priceText) {
+    if (!priceText) return 0;
+    const cleaned = priceText.replace(/\s/g, '').replace('R$', '').replace('.', '').replace(',', '.');
+    const n = parseFloat(cleaned);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function formatBR(n) {
+    return `R$ ${n.toFixed(2).replace('.', ',')}`;
+  }
+
+  function getCardPrice(card) {
+    const priceEl = card.querySelector('.price');
+    if (!priceEl) return 0;
+    return parsePriceText(priceEl.textContent || priceEl.innerText);
+  }
+
+  function atualizarTotalVisual() {
+    totalEl.textContent = formatBR(total);
+    totalModal.textContent = formatBR(total);
+  }
+
+  // Salva carrinho no localStorage; se vazio, remove a chave 'total' também
+  function salvarCarrinho() {
+    const obj = {};
+    let hasAny = false;
+    cards.forEach(card => {
+      const nome = card.dataset.nome;
+      const qtd = parseInt(card.querySelector('.qtd').textContent, 10) || 0;
+      if (qtd > 0) {
+        obj[nome] = qtd;
+        hasAny = true;
+      }
+    });
+    if (hasAny) {
+      localStorage.setItem('carrinho', JSON.stringify(obj));
+      localStorage.setItem('total', total.toFixed(2));
+    } else {
+      localStorage.removeItem('carrinho');
+      localStorage.removeItem('total');
+    }
+  }
+
+  function construirListaModal() {
+    listaCarrinho.innerHTML = '';
+    let any = false;
+    cards.forEach(card => {
+      const nome = card.dataset.nome;
+      const qtd = parseInt(card.querySelector('.qtd').textContent, 10) || 0;
+      if (qtd > 0) {
+        any = true;
+        const precoUnit = getCardPrice(card);
+        const subtotal = precoUnit * qtd;
+        const li = document.createElement('li');
+
+        const info = document.createElement('div');
+        info.className = 'item-info';
+        const nomeSpan = document.createElement('span');
+        nomeSpan.textContent = `${nome}`;
+        const qtdSpan = document.createElement('span');
+        qtdSpan.textContent = ` x${qtd}`;
+        const subSpan = document.createElement('span');
+        subSpan.textContent = ` ${formatBR(subtotal)}`;
+        info.appendChild(nomeSpan);
+        info.appendChild(qtdSpan);
+        info.appendChild(subSpan);
+
+        const btnRem = document.createElement('button');
+        btnRem.className = 'remover';
+        btnRem.textContent = '❌';
+        btnRem.setAttribute('aria-label', `Remover ${nome}`);
+        btnRem.addEventListener('click', () => {
+          // Zera a quantidade no card
+          card.querySelector('.qtd').textContent = '0';
+          // Recalcula total inteiro (evitando erros por arredondamento)
+          recomputeTotalFromCards();
+          salvarCarrinho();
+          construirListaModal();
+        });
+
+        li.appendChild(info);
+        li.appendChild(btnRem);
+        listaCarrinho.appendChild(li);
+      }
+    });
+
+    if (!any) {
+      const li = document.createElement('li');
+      li.style.justifyContent = 'center';
+      li.textContent = 'Seu carrinho está vazio.';
+      listaCarrinho.appendChild(li);
+    }
+  }
+
+  function abrirModal() {
+    construirListaModal();
+    modalCarrinho.style.display = 'flex';
+    modalCarrinho.setAttribute('aria-hidden', 'false');
+  }
+
+  function fecharModal() {
+    modalCarrinho.style.display = 'none';
+    modalCarrinho.setAttribute('aria-hidden', 'true');
+  }
+
+  // Recalcula total somando todos os cards (fonte de verdade)
+  function recomputeTotalFromCards() {
+    total = 0;
+    cards.forEach(card => {
+      const qtd = parseInt(card.querySelector('.qtd').textContent, 10) || 0;
+      const preco = getCardPrice(card);
+      total += preco * qtd;
+    });
+    atualizarTotalVisual();
+  }
+
+  // Inicialização: coloca quantidades salvas e calcula total
+  function inicializarCarrinho() {
+    cards.forEach(card => {
+      const nome = card.dataset.nome;
+      const qtdEl = card.querySelector('.qtd');
+      const savedQtd = carrinhoSalvo[nome] ? parseInt(carrinhoSalvo[nome], 10) : 0;
+      qtdEl.textContent = savedQtd;
+    });
+    // total é sempre computado a partir das quantidades atuais
+    recomputeTotalFromCards();
+  }
+
+  // Adiciona eventos aos botões +/-
+  function configurarBotoesQuantidade() {
+    cards.forEach(card => {
+      const menos = card.querySelector('.menos');
+      const mais = card.querySelector('.mais');
+      const qtdEl = card.querySelector('.qtd');
+      const preco = getCardPrice(card);
+
+      menos.addEventListener('click', () => {
+        let qtd = parseInt(qtdEl.textContent, 10) || 0;
+        if (qtd > 0) {
+          qtd--;
+          qtdEl.textContent = qtd;
+          recomputeTotalFromCards();
+          salvarCarrinho();
+        }
+      });
+
+      mais.addEventListener('click', () => {
+        let qtd = parseInt(qtdEl.textContent, 10) || 0;
+        qtd++;
+        qtdEl.textContent = qtd;
+        recomputeTotalFromCards();
+        salvarCarrinho();
+      });
+    });
+  }
+
+  // ======= EVENTOS DO MODAL / BOTÕES PRINCIPAIS =======
+  verCarrinhoBtn.addEventListener('click', abrirModal);
+  fecharCarrinho.addEventListener('click', fecharModal);
+
+  modalCarrinho.addEventListener('click', (e) => {
+    if (e.target === modalCarrinho) fecharModal();
+  });
+
+  whatsappBtn.addEventListener('click', () => {
+    const pedidos = [];
+    let numeroItem = 1;
+    cards.forEach(card => {
+      const nome = card.dataset.nome;
+      const qtd = parseInt(card.querySelector('.qtd').textContent, 10) || 0;
+      if (qtd > 0) {
+        pedidos.push(`${numeroItem}. ${nome} x${qtd}`);
+        numeroItem++;
+      }
+    });
+
+    if (pedidos.length === 0) {
+      alert('Adicione algum item ao pedido!');
+      return;
+    }
+
+    const idPedido = `PEDIDO #${pedidoID}`;
+    const mensagem = `${idPedido}\nOlá! Gostaria de fazer o pedido:\n${pedidos.join('\n')}\nTotal: ${formatBR(total)}`;
+
+    const url = `https://wa.me/5531971458363?text=${encodeURIComponent(mensagem)}`;
+    window.open(url, '_blank');
+
+    // incrementar id e salvar
+    pedidoID++;
+    localStorage.setItem('pedidoID', pedidoID);
+
+    // limpar carrinho
+    cards.forEach(card => card.querySelector('.qtd').textContent = '0');
+    recomputeTotalFromCards();
+    salvarCarrinho();
+    fecharModal();
+  });
+
+  // Inicializa
+  inicializarCarrinho();
+  configurarBotoesQuantidade();
+  </script>
+
+</body>
+</html>
