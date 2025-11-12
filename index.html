@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cafeteria Brown - Cardápio</title>
+<style>
+    :root {
+        --cor-principal: #ff7b7b;
+        --cor-secundaria: #b05b22;
+        --cor-caixa: #fff3e0;
+        --cor-texto: #333;
+    }
+
+    body {
+        margin: 0;
+        font-family: "Merriweather", serif;
+        /* 🌸 Degradê completo e envolvente */
+              background: linear-gradient(135deg, #ffe6fa 0%, #ffe0d4 40%, #ffc2b3 70%, #ffb3b3 100%);
+        color: var(--cor-texto);
+        line-height: 1.8;
+        min-height: 100vh;
+        background-attachment: fixed; /* Faz o degradê ficar fixo ao rolar */
+    }
+
+    h1, h2 {
+        font-family: "Merriweather", serif;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+        background: linear-gradient(90deg, #ff8c8c, #ffb899);
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 40px;
+        position: relative;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        flex-wrap: wrap;
+        border-bottom: 3px solid rgba(255,255,255,0.4);
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+    }
+
+    .logo img {
+        height: 55px;
+        margin-right: 12px;
+        border-radius: 50%;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .logo h1 {
+        font-size: 1.8em;
+        margin: 0;
+        letter-spacing: 1px;
+    }
+
+    /* ===== MENU ===== */
+    nav {
+        display: none;
+        flex-direction: column;
+        background: linear-gradient(180deg, #ff8c8c, #ffb899);
+        position: absolute;
+        top: 65px;
+        right: 0;
+        width: 220px;
+        text-align: right;
+        padding: 15px 0;
+        border-radius: 0 0 0 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        z-index: 10;
+    }
+
+    nav a {
+        display: block;
+        color: white;
+        text-decoration: none;
+        margin: 12px 25px;
+        font-weight: bold;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+    nav a:hover {
+        color: #fffbe8;
+        transform: translateX(-5px);
+    }
+
+    nav.active {
+        display: flex;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .menu-toggle {
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+    }
+
+    .menu-toggle span {
+        height: 3px;
+        width: 25px;
+        background: white;
+        margin: 4px 0;
+        border-radius: 5px;
+        transition: 0.3s;
+    }
+
+    .menu-toggle.active span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
+    .menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+    }
+    .menu-toggle.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -5px);
+    }
+
+    /* ===== CARROSSEL ===== */
+    .carousel-container {
+        width: 100%;
+        max-width: 1000px;
+        aspect-ratio: 16 / 9;
+        margin: 60px auto;
+        overflow: hidden;
+        border-radius: 18px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+        position: relative;
+        background: #fff;
+    }
+
+    .carousel-images {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .carousel-images img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    /* ===== QUEM SOMOS ===== */
+    .quem-somos {
+        max-width: 900px;
+        margin: 70px auto;
+        padding: 45px 50px;
+        background: rgba(255, 255, 255, 0.8);
+        border: 2px solid #ff9b9b;
+        border-radius: 18px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+        backdrop-filter: blur(6px);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .quem-somos:hover {
+        transform: scale(1.01);
+        box-shadow: 0 8px 22px rgba(0,0,0,0.2);
+    }
+
+    .quem-somos h2 {
+        font-size: 34px;
+        margin-bottom: 25px;
+        text-align: center;
+        color: #b05b22;
+    }
+
+    .quem-somos p {
+        font-size: 18px;
+        margin-bottom: 18px;
+        text-align: justify;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+        background: linear-gradient(90deg, #ff8c8c, #ffb899);
+        color: white;
+        text-align: center;
+        padding: 25px;
+        margin-top: 100px;
+        font-size: 15px;
+        box-shadow: 0 -3px 10px rgba(0,0,0,0.1);
+    }
+
+    footer img {
+        width: 25px;
+        vertical-align: middle;
+        margin-left: 8px;
+        transition: transform 0.3s;
+    }
+
+    footer img:hover {
+        transform: scale(1.1);
+    }
+
+    /* ===== RESPONSIVIDADE ===== */
+    @media (max-width: 992px) {
+        .carousel-container {
+            max-width: 90%;
+            aspect-ratio: 16 / 10;
+            margin: 40px auto;
+        }
+    }
+
+    @media (max-width: 768px) {
+        header {
+            flex-direction: row;
+            justify-content: space-between;
+            padding: 15px 20px;
+        }
+
+        .carousel-container {
+            max-width: 95%;
+            aspect-ratio: 4 / 3;
+            border-radius: 10px;
+        }
+
+        .quem-somos {
+            padding: 25px 20px;
+            margin: 30px 15px;
+        }
+
+        .quem-somos h2 {
+            font-size: 26px;
+        }
+
+        .quem-somos p {
+            font-size: 15px;
+        }
+
+        footer {
+            font-size: 14px;
+            padding: 15px 10px;
+        }
+
+        footer img {
+            width: 22px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .carousel-container {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+        }
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="./logo feira empreendeedrosimso.jpg" alt="Logo da Cafeteria Brown" />
+        <h1>Cafeteria Brown</h1>
+    </div>
+
+    <div class="menu-toggle" id="menu-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <nav id="menu">
+        <a href="sobremesas.html">🥤🍰 Cardápio</a>
+    </nav>
+</header>
+
+<main>
+    <!-- Carrossel -->
+    <div class="carousel-container">
+        <div class="carousel-images" id="carousel">
+            <img src="torta-de-queijo-com-morangos-em-mesa-de-madeira (1).jpg" alt="Torta de Morango">
+            <img src="mochacaramelo.png" alt="Mocha Caramelo">
+            <img src="tortamaracuja.jpg" alt="Torta de Maracujá">
+            <img src="bolochocolate.jpg" alt="Bolo de Chocolate">
+        </div>
+    </div>
+
+    <section class="quem-somos">
+        <h2>Quem Somos</h2>
+        <p>A <strong>Cafeteria Brown</strong> é uma empresa dedicada a oferecer produtos de alta qualidade, aliados a um ambiente agradável e acolhedor.</p>
+        <p>Trabalhamos com ingredientes cuidadosamente selecionados e processos que valorizam o frescor e a autenticidade de cada produto.</p>
+        <p>Mais do que servir cafés e doces, buscamos criar momentos únicos, reforçando nossa missão de ser referência em qualidade e hospitalidade.</p>
+    </section>
+</main>
+
+<footer>
+    © 2025 Cafeteria Brown. Todos os direitos reservados
+    <p>
+        Siga no Instagram 
+        <a href="https://instagram.com/cafeteriass_brown" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/1384/1384063.png" alt="Instagram">
+        </a>
+    </p>
+</footer>
+
+<script>
+    // Menu interativo
+    const toggle = document.getElementById('menu-toggle');
+    const menu = document.getElementById('menu');
+
+    toggle.addEventListener('click', () => {
+        menu.classList.toggle('active');
+        toggle.classList.toggle('active');
+    });
+
+    // Carrossel automático
+    const carousel = document.getElementById('carousel');
+    let index = 0;
+    const totalImages = carousel.children.length;
+
+    setInterval(() => {
+        index = (index + 1) % totalImages;
+        carousel.style.transform = `translateX(-${index * 100}%)`;
+    }, 4000);
+</script>
+
+</body>
+</html>
