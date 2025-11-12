@@ -5,12 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cafeteria Brown - Cardápio Unificado</title>
 
-  <!-- === CSS (mantive os dois blocos que você enviou, um após o outro) === -->
   <style>
     /* ======= RESET ======= */
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ======= CORPO (bloco do smooth.html) ======= */
+    /* ======= CORPO ======= */
     body {
       font-family: "Merriweather", serif;
       color: #4b2e2b;
@@ -133,55 +132,11 @@
     /* ======= RESPONSIVIDADE (smooth) ======= */
     @media (max-width: 768px) { .cards-container { grid-template-columns: repeat(2, 1fr); } #sacola { right:10px; bottom:10px; } }
     @media (max-width: 480px) { .cards-container { grid-template-columns: 1fr; } #sacola { flex-direction: column; left:10px; right:10px; } .logo h1 { font-size: 1.3em; } }
-
-    /* ======= BLOCO CSS DO SOBREMESAS (mantido) ======= */
-    /* (mesma aparência, pequeno bloco; mantido para consistência com a sua página de sobremesas) */
-    header.sobremesas-header {
-      background: linear-gradient(90deg, #ff8c8c, #ffb899);
-      color: white;
-      padding: 1rem 2rem;
-      position: relative;
-    }
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      position: relative;
-    }
-    .logo-small img { height: 50px; margin-right: 10px; border-radius: 30px; }
-    .header-title { text-align: center; margin: 1rem 0 0; font-size: 2rem; letter-spacing: 1px; }
-
-    .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 35px;
-      padding: 40px;
-      max-width: 1200px;
-      margin: auto;
-      flex-grow: 1;
-    }
-
-    .card-sobremesa {
-      background-color: white;
-      border-radius: 12px;
-      border: 2px solid #ffb899;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-      overflow: hidden;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .card-sobremesa img { width: 100%; height: 250px; object-fit: cover; }
-    .card-sobremesa .card-content { padding: 20px; text-align: center; }
-    .card-sobremesa .card-content h3 { color: #ff6363; margin-bottom: 10px; font-size: 1.4rem; }
-    .card-sobremesa .price { font-weight: bold; color: #ff7b7b; font-size: 1.2rem; margin-bottom: 10px; }
-
-    /* mantém botões e modal do outro bloco também */
   </style>
 </head>
 <body>
 
-  <!-- ======= CABEÇALHO UNIFICADO (mantive logo e menu) ======= -->
+  <!-- ======= CABEÇALHO UNIFICADO ======= -->
   <header class="top">
     <div class="logo">
       <img src="./logo feira empreendeedrosimso.jpg" alt="Logo da Cafeteria Brown" />
@@ -193,12 +148,11 @@
     </div>
 
     <nav class="smooth-menu" id="menu">
-      <!-- links mantidos -->
       <a href="index.html">🏠 Início</a>
     </nav>
   </header>
 
-  <!-- ======= SEÇÃO SMOOTHIES (mantida exatamente como no seu código) ======= -->
+  <!-- ======= SEÇÃO SMOOTHIES ======= -->
   <main>
     <section id="smooth-section" class="cards-container" style="text-align:center; padding-top: 40px;">
       <div class="card" data-nome="Smoothie de Caramelo" data-preco="10.00">
@@ -258,8 +212,8 @@
       </div>
     </section>
 
-    <!-- ======= SEÇÃO SOBREMESAS (mantida exatamente como no seu código) ======= -->
-    <section id="sobremesas-section" class="container">
+    <!-- ======= SEÇÃO SOBREMESAS ======= -->
+    <section id="sobremesas-section" class="container cards-container">
       <div class="card-sobremesa card" data-nome="Bolo de Chocolate" data-preco="11.00">
         <img src="./bolochocolate.jpg" alt="Bolo de Chocolate">
         <div class="card-content">
@@ -363,12 +317,13 @@
   const fecharCarrinho = document.getElementById('fecharCarrinho');
 
   let total = 0;
-  let pedidoID = localStorage.getItem('pedidoID') ? parseInt(localStorage.getItem('pedidoID')) : 1;
+  // recupera pedidoID salvo, ou inicia em 1
+  let pedidoID = localStorage.getItem('pedidoID') ? parseInt(localStorage.getItem('pedidoID'), 10) : 1;
 
   // LocalStorage chave unificada
   const KEY_CARRINHO = 'carrinhoUnificado';
 
-  // Helper: parsear preço de texto "R$ 12,00"
+  // Helper: parsear preço de texto "R$ 12,00" (usado se tiver price text)
   function parsePriceText(priceText) {
     if (!priceText) return 0;
     const cleaned = priceText.replace(/\s/g, '').replace('R$', '').replace(/\./g, '').replace(',', '.');
@@ -409,7 +364,8 @@
 
   // Reconstrói carrinho a partir das quantidades visuais nos cards e atualiza storage
   function buildCarrinhoFromCards() {
-    const carrinho = readSavedCarrinho(); // le o existente (isso permite manter itens caso haja cards externos)
+    // mantemos o comportamento de atualizar o carrinho unificado
+    const carrinho = readSavedCarrinho();
     // atualiza/insere itens que existem nesta página
     cards.forEach(card => {
       const nome = card.dataset.nome;
@@ -418,7 +374,6 @@
       if (qtd > 0) {
         carrinho[nome] = { qtd: qtd, preco: preco };
       } else {
-        // remove item desta página (se havia antes)
         if (carrinho[nome]) delete carrinho[nome];
       }
     });
@@ -557,6 +512,7 @@
       return;
     }
 
+    // monta id do pedido com o valor atual (antes do incremento)
     const idPedido = `PEDIDO #${pedidoID}`;
     const pedidos = [];
     nomes.forEach((nome, idx) => {
@@ -569,19 +525,22 @@
     const url = `https://wa.me/5531971458363?text=${encodeURIComponent(mensagem)}`;
     window.open(url, '_blank');
 
-    // incrementar id e salvar
+    // ---------- CORREÇÃO IMPORTANTE ----------
+    // incrementar o contador e salvá-lo de forma persistente antes de limpar o carrinho
     pedidoID++;
-    localStorage.setItem('pedidoID', pedidoID);
+    localStorage.setItem('pedidoID', pedidoID.toString());
 
-    // limpar carrinho (remover todos os itens do storage e zerar visual)
+    // limpar carrinho (remover apenas os itens, não o pedidoID)
     localStorage.removeItem(KEY_CARRINHO);
+
+    // zerar quantidades visuais e atualizar total na tela
     cards.forEach(card => card.querySelector('.qtd').textContent = '0');
-    recomputeTotalFromStorage();
+    total = 0;
+    atualizarTotalVisual();
     fecharModal();
   });
 
   // Inicialização: se houver carrinho salvo, atualiza campos visuais
-  // Observação: caso o usuário tenha itens salvos de páginas antigas, mantemos tudo.
   (function init() {
     const saved = readSavedCarrinho();
     // popula os cards visuais com as quantidades salvas (se houver)
